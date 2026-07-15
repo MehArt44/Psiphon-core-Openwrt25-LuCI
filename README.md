@@ -612,14 +612,16 @@ nft add rule inet fw4 input iifname "br-lan" tcp dport 10808-10809 accept 2>/dev
 اگر می‌خواهید بعد از ریبوت هم قوانین فایروال پاک نشود دستور زیر را بزنید
 ```bash
 
+# اضافه کردن قانون فایروال با ساختار کاملاً منظم و ایجاد خط جدید
 cat << 'EOF' >> /etc/config/firewall
 
 config rule
-    option name 'Allow-Psiphon-Proxy'
-    option src 'lan'
-    option dest_port '10808-10809'
-    option proto 'tcp'
-    option target 'ACCEPT'
+	option name 'Allow-Psiphon-Proxy'
+	option src 'lan'
+	option dest_port '10808-10809'
+	option proto 'tcp'
+	option target 'ACCEPT'
+
 EOF
 
 /etc/init.d/firewall restart
