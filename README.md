@@ -1,17 +1,12 @@
 **پارسی** | [English](README.en.md)
 
+راهنمای جامع نصب، راه‌اندازی و خودکارسازی Psiphon-Core به همراه پنل گرافیکی LuCI در OpenWrt 25
+این پروژه یک راهنمای کاملاً بومی و عملیاتی برای کامپایل، کانفیگ و اتصال هسته لینوکسی سایفون (psiphon-core) به رابط کاربری گرافیکی لوسی (LuCI JavaScript) در سیستم‌عامل OpenWrt 25 است. تمامی کلیدهای کنترل سرویس، فیلدهای تنظیمات (پورت‌ها، کشور، پروتکل) و بخش مانیتورینگ وضعیت آی‌پی کاملاً همگام‌سازی شده‌اند. بدون سربار روی روم و سی پی یو روتر[cite: 2]
 
+🛠️ ۱. آموزش کامپایل فایل باینری (روی کامپیوتر) – PowerShell / کامپایل شده برای چند معماری CPU
+برای ساخت فایل اجرایی اختصاصی روتر خود، ابتدا مطمئن شوید زبان Go روی سیستم شما نصب است. سپس ترمینال را باز کرده و بر اساس معماری پردازنده روتر خود، دستورات زیر را اجرا کنید[cite: 2]:
 
-## راهنمای جامع نصب، راه‌اندازی و خودکارسازی Psiphon-Core به همراه پنل گرافیکی LuCI در OpenWrt 25
-
-این پروژه یک راهنمای کاملاً بومی و عملیاتی برای کامپایل، کانفیگ و اتصال هسته لینوکسی سایفون (`psiphon-core`) به رابط کاربری گرافیکی لوسی (**LuCI JavaScript**) در سیستم‌عامل **OpenWrt 25** است. تمامی کلیدهای کنترل سرویس، فیلدهای تنظیمات (پورت‌ها، کشور، پروتکل) و بخش مانیتورینگ وضعیت آی‌پی کاملاً همگام‌سازی شده‌اند. بدون سربار روی روم و سی پی یو روتر
-
-
-## 🛠️ ۱. آموزش کامپایل فایل باینری (روی کامپیوتر) – PowerShell/ کامپایل شده برای چند معماری CPU در Rel
-
-برای ساخت فایل اجرایی اختصاصی روتر خود، ابتدا مطمئن شوید زبان Go روی سیستم شما نصب است. سپس ترمینال را باز کرده و بر اساس معماری پردازنده روتر خود، دستورات زیر را اجرا کنید:
-
-```bash
+Bash
 # دریافت سورس کد رسمی هسته سایفون از مخزن گیت‌هاب
 git clone https://github.com/Psiphon-Labs/psiphon-tunnel-core.git
 cd psiphon-tunnel-core/ConsoleClient
@@ -26,27 +21,25 @@ $env:GOOS="linux"
 $env:GOARCH="arm"
 $env:GOARM="7"
 go build -o psiphon-core .
+```[cite: 2]
 
-```
+## 🚀 ۲. انتقال فایل‌ها به روتر
 
-## 🚀 ۲. انتقال هردو فایل و پوشه را به آدرس زیر منتقل کنید
-1. "/usr/bin/psiphon_data/"
-2. "/usr/bin/psiphon-core"
+پس از اتمام کامپایل، فایل خروجی `psiphon-core` و پوشه `psiphon_data` را از طریق ابزارهایی مانند MobaXterm یا SCP به مسیرهای زیر روی روتر منتقل کنید[cite: 2]:
+1. `/usr/bin/psiphon_data/`[cite: 2]
+2. `/usr/bin/psiphon-core`[cite: 2]
 
-*پس از اتمام کامپایل،  فایل خروجی `psiphon-core`  و پوشه psiphon_data را از طریق ابزارهایی مانند MobaXterm یا SCP به مسیر `/usr/bin/` روی روتر منتقل کنید.*
+## 📁 ۳. استقرار زیرساخت و کدهای کامل پنل گرافیکی
 
-## 📁 ۳. استقرار زیرساخت و کدهای کامل پنل گرافیکی     1 – 7 
-بلوک کد زیر یک اسکریپت همه‌کاره است. آن را به طور کامل کپی کرده و در ترمینال روتر پیست کنید. این اسکریپت تمام فایل‌های ساختاری لوسی، تنظیمات UCI، کدهای جاوااسکریپت داشبورد (همراه با دکمه‌ها و فیلدهای کامل) و مجوزهای امنیتی را به صورت یکجا ایجاد می‌کند:
+بلوک کد زیر یک اسکریپت همه‌کاره است. آن را به طور کامل کپی کرده و در ترمینال روتر پیست کنید. این اسکریپت تمام فایل‌های ساختاری لوسی، تنظیمات UCI، کدهای جاوااسکریپت داشبورد (همراه با دکمه‌ها و فیلدهای کامل) و مجوزهای امنیتی را به صورت یکجا ایجاد می‌کند[cite: 2]:
 
-
-
-GROUP 1 (Priority 1): Core Permissions & RPCD ACL
-GROUP 2 (Priority 2): Base UCI Configuration
-GROUP 3 (Priority 3): LuCI Menu Registration
-GROUP 4 (Priority 4): Init.d Service Script Generation
-GROUP 5 (Priority 5): Firewall and Routing Configurations
-GROUP 6 (Priority 6): LuCI Frontend (View Script)
-GROUP 7 (Priority 7): Service Restart & Cache Cleanup
+*   GROUP 1 (Priority 1): Core Permissions & RPCD ACL[cite: 2]
+*   GROUP 2 (Priority 2): Base UCI Configuration[cite: 2]
+*   GROUP 3 (Priority 3): LuCI Menu Registration[cite: 2]
+*   GROUP 4 (Priority 4): Init.d Service Script Generation[cite: 2]
+*   GROUP 5 (Priority 5): Firewall and Routing Configurations[cite: 2]
+*   GROUP 6 (Priority 6): LuCI Frontend (View Script)[cite: 2]
+*   GROUP 7 (Priority 7): Service Restart & Cache Cleanup[cite: 2]
 
 ```bash
 #!/bin/sh
@@ -529,7 +522,7 @@ return view.extend({
 						]),
 						E('div', { 'style': 'display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center;' }, [
 							E('div', { 'style': 'background: rgba(0,0,0,0.3); padding: 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.03); display: flex; flex-direction: column; justify-content: center; min-height: 45px;' }, [
-								E('div', { 'style': 'font-size: 10px; color: #8899aa; margin-bottom: 2px; font-weight: bold;' }, _('ICMP Sim')),
+								E('div', { 'style': 'font-size: 10px; color: #8899aa; margin-bottom: 2px; font-weight: bold;' }, _('ICMP Ping')),
 								E('div', { 'id': 'diag_icmp', 'style': 'font-family: monospace; font-size: 12px; color: #ffcc00;' }, '-')
 							]),
 							E('div', { 'style': 'background: rgba(0,0,0,0.3); padding: 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.03); display: flex; flex-direction: column; justify-content: center; min-height: 45px;' }, [
@@ -610,7 +603,6 @@ return view.extend({
 				} catch(e) { elReal.textContent = _('Failed'); }
 			});
 			
-			// استفاده از پورت 10109 یا 10809 (پورت پروکسی HTTP) به جای 8080
 			var cmdVpn = 'curl -sL -m 3 --interface tun0 http://ip-api.com/json/ 2>/dev/null || curl -sL -m 3 -x http://127.0.0.1:10809 http://ip-api.com/json/ 2>/dev/null';
 			fs.exec('/bin/sh', ['-c', cmdVpn]).then(function(res) {
 				try {
@@ -704,7 +696,6 @@ return view.extend({
 								var tunCountEl = document.getElementById('stat_tunnels_count');
 								if (tunCountEl) tunCountEl.textContent = logObj.data.count;
 								
-								// بررسی هوشمند: به محض برقراری اولین تونل، دقیقاً یک‌بار ریفرش IP انجام شود تا لوگو سبز شود
 								if (logObj.data.count > 0 && !self.hasConnected) {
 									self.hasConnected = true;
 									refreshIPs();
@@ -768,31 +759,26 @@ chmod +x /etc/init.d/psiphon
 /etc/init.d/psiphon restart
 
 echo "Setup Completed Successfully! All updates applied."
+```[cite: 2]
 
+## 💡 دستورات تست، اجرا و مدیریت سرویس
 
-
-```
-
-
-
-*تست اجرای و متوقف کردن با دستور*
-
-* **روشن کردن تانل سایفون:**
-```bash
-/etc/init.d/psiphon start
-```
-* **خاموش کردن کامل سیستم:**
-```bash
-/etc/init.d/psiphon stop
-```
-* **فعال‌سازی اجرای خودکار پس از روشن شدن روتر:**
-```bash
-/etc/init.d/psiphon enable
-```
+*   **روشن کردن تانل سایفون:**
+    ```bash
+    /etc/init.d/psiphon start
+    ```[cite: 2]
+*   **خاموش کردن کامل سیستم:**
+    ```bash
+    /etc/init.d/psiphon stop
+    ```[cite: 2]
+*   **فعال‌سازی اجرای خودکار پس از روشن شدن روتر:**
+    ```bash
+    /etc/init.d/psiphon enable
+    ```[cite: 2]
 
 ## 🗑️ ۸. حذف کامل و بی‌بازگشت سایفون از سیستم (Uninstall)
 
-اگر به هر دلیلی تمایل داشتید تمامی تنظیمات، فایل‌های باینری، دیتابیس‌ها و منوهای پنل لوسی سایفون را بدون به جا ماندن هیچ ردپایی حذف کنید، اسکریپت یکپارچه زیر را در ترمینال روتر اجرا کنید:
+اگر به هر دلیلی تمایل داشتید تمامی تنظیمات، فایل‌های باینری، دیتابیس‌ها و منوهای پنل لوسی سایفون را بدون به جا ماندن هیچ ردپایی حذف کنید، اسکریپت یکپارچه زیر را در ترمینال روتر اجرا کنید[cite: 2]:
 
 ```bash
 # متوقف کردن سرویس و غیرفعال‌سازی آن
@@ -822,12 +808,11 @@ rm -rf /tmp/luci-indexcache* /tmp/luci-modulecache/ /var/luci-indexcache*
 /etc/init.d/firewall restart
 
 echo "Psiphon has been completely uninstalled from the system."
-```
+```[cite: 2]
 
-## محیط Luci برای سایفون 
+## محیط Luci برای سایفون[cite: 2]
 
-<img width="1746" height="1640" alt="Psiphon-Core Openwrt25" src="https://github.com/user-attachments/assets/66af9842-4eca-4622-acc5-7a8be2000192" />
-
+<img width="1746" height="1640" alt="Psiphon-Core Openwrt25" src="[https://github.com/user-attachments/assets/66af9842-4eca-4622-acc5-7a8be2000192](https://github.com/user-attachments/assets/66af9842-4eca-4622-acc5-7a8be2000192)" />[cite: 2]
  
 
-
+<img width="1746" height="1640" alt="Psiphon-Core Openwrt25" src="https://github.com/user-attachments/assets/66af9842-4eca-4622-acc5-7a8be2000192" />
