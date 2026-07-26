@@ -1,7 +1,7 @@
 **پارسی** | [English](README.en.md)
 
 راهنمای جامع نصب، راه‌اندازی و خودکارسازی Psiphon-Core به همراه پنل گرافیکی LuCI در OpenWrt 25
-این پروژه یک راهنمای کاملاً بومی و عملیاتی برای کامپایل، کانفیگ و اتصال هسته لینوکسی سایفون (psiphon-core) به رابط کاربری گرافیکی لوسی (LuCI JavaScript) در سیستم‌عامل OpenWrt 25 است. تمامی کلیدهای کنترل سرویس، فیلدهای تنظیمات (پورت‌ها، کشور، پروتکل) و بخش مانیتورینگ وضعیت آی‌پی کاملاً همگام‌سازی شده‌اند. بدون سربار روی روم و سی پی یو روتر[cite: 2]
+این پروژه یک راهنمای کاملاً بومی و عملیاتی برای کامپایل، کانفیگ و اتصال هسته لینوکسی سایفون (psiphon-core) به رابط کاربری گرافیکی لوسی (LuCI JavaScript) در سیستم‌عامل OpenWrt 25 است. تمامی کلیدهای کنترل سرویس، فیلدهای تنظیمات (پورت‌ها، کشور، پروتکل) و بخش مانیتورینگ وضعیت آی‌پی کاملاً همگام‌سازی شده‌اند. بدون سربار روی روم و سی پی یو روتر
 
 
 # 🛠️ ۱. آموزش کامپایل فایل باینری (روی کامپیوتر) – PowerShell / کامپایل شده برای چند معماری CPU
@@ -767,26 +767,27 @@ chmod +x /etc/init.d/psiphon
 /etc/init.d/psiphon restart
 
 echo "Setup Completed Successfully! All updates applied."
-```[cite: 2]
+```
 
 ## 💡 دستورات تست، اجرا و مدیریت سرویس
 
 *   **روشن کردن تانل سایفون:**
     ```bash
     /etc/init.d/psiphon start
-    ```[cite: 2]
+    ```
 *   **خاموش کردن کامل سیستم:**
     ```bash
     /etc/init.d/psiphon stop
-    ```[cite: 2]
+    ```
 *   **فعال‌سازی اجرای خودکار پس از روشن شدن روتر:**
     ```bash
     /etc/init.d/psiphon enable
-    ```[cite: 2]
+    ```
+
 
 ## 🗑️ ۸. حذف کامل و بی‌بازگشت سایفون از سیستم (Uninstall)
 
-اگر به هر دلیلی تمایل داشتید تمامی تنظیمات، فایل‌های باینری، دیتابیس‌ها و منوهای پنل لوسی سایفون را بدون به جا ماندن هیچ ردپایی حذف کنید، اسکریپت یکپارچه زیر را در ترمینال روتر اجرا کنید[cite: 2]:
+اگر به هر دلیلی تمایل داشتید تمامی تنظیمات، فایل‌های باینری، دیتابیس‌ها و منوهای پنل لوسی سایفون را بدون به جا ماندن هیچ ردپایی حذف کنید، اسکریپت یکپارچه زیر را در ترمینال روتر اجرا کنید:
 
 ```bash
 # متوقف کردن سرویس و غیرفعال‌سازی آن
@@ -816,11 +817,8 @@ rm -rf /tmp/luci-indexcache* /tmp/luci-modulecache/ /var/luci-indexcache*
 /etc/init.d/firewall restart
 
 echo "Psiphon has been completely uninstalled from the system."
-```[cite: 2]
+```
 
-## محیط Luci برای سایفون[cite: 2]
-
-<img width="1746" height="1640" alt="Psiphon-Core Openwrt25" src="[https://github.com/user-attachments/assets/66af9842-4eca-4622-acc5-7a8be2000192](https://github.com/user-attachments/assets/66af9842-4eca-4622-acc5-7a8be2000192)" />[cite: 2]
- 
+## محیط Luci برای سایفون
 
 <img width="1746" height="1640" alt="Psiphon-Core Openwrt25" src="https://github.com/user-attachments/assets/66af9842-4eca-4622-acc5-7a8be2000192" />
