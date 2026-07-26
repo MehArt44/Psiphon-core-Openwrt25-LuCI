@@ -39,7 +39,7 @@ go build -o psiphon-core .
 بلوک کد زیر یک اسکریپت همه‌کاره است. آن را به طور کامل کپی کرده و در ترمینال روتر پیست کنید. این اسکریپت تمام فایل‌های ساختاری لوسی، تنظیمات UCI، کدهای جاوااسکریپت داشبورد (همراه با دکمه‌ها و فیلدهای کامل) و مجوزهای امنیتی را به صورت یکجا ایجاد می‌کند:
 
 
-===================================================================
+
 GROUP 1 (Priority 1): Core Permissions & RPCD ACL
 GROUP 2 (Priority 2): Base UCI Configuration
 GROUP 3 (Priority 3): LuCI Menu Registration
@@ -47,7 +47,6 @@ GROUP 4 (Priority 4): Init.d Service Script Generation
 GROUP 5 (Priority 5): Firewall and Routing Configurations
 GROUP 6 (Priority 6): LuCI Frontend (View Script)
 GROUP 7 (Priority 7): Service Restart & Cache Cleanup
-===================================================================
 
 ```bash
 #!/bin/sh
