@@ -846,11 +846,7 @@ rm -rf /tmp/luci-indexcache* /tmp/luci-modulecache/ /var/luci-indexcache*
 echo "Psiphon has been completely uninstalled from the system."
 
 ```
-LuCI Environment for Psiphon
-
-<img width="1746" height="1640" alt="Psiphon-Core Openwrt25" src="https://github.com/user-attachments/assets/f509a52d-5a2f-414a-8b38-7665f5ed19b6" />
-
-
----
 
 ## LuCI Environment for Psiphon
+
+<img width="1746" height="1640" alt="Psiphon-Core Openwrt25" src="https://github.com/user-attachments/assets/f509a52d-5a2f-414a-8b38-7665f5ed19b6" />
