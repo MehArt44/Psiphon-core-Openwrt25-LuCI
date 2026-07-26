@@ -30,31 +30,23 @@ go build -o psiphon-core .
 
 ```
 
+## 🚀 ۱. انتقال هردو فایل و پوشه را به آدرس زیر منتقل کنید
+1. "/usr/bin/psiphon_data/"
+2. "/usr/bin/psiphon-core"
+3. 
 *پس از اتمام کامپایل،  فایل خروجی `psiphon-core`  و پوشه psiphon_data را از طریق ابزارهایی مانند MobaXterm یا SCP به مسیر `/usr/bin/` روی روتر منتقل کنید.*
-
----
-
-## 🚀 ۲. آماده‌سازی در OpenWrt 
-⚠️ بعد از اجرای دستور زیر محتوای پوشه psiphon_data.zip به آدرس /usr/bin/psiphon_data/ منتقل کنید  ⚠️
-
-```bash
-# صدور مجوز اجرا و ساخت پوشه دیتابیس سایفون
-chmod +x /usr/bin/psiphon-core
-mkdir -p /usr/bin/psiphon_data
-```
----
 
 ## 📁 ۳. استقرار زیرساخت و کدهای کامل پنل گرافیکی     1 – 7 
 بلوک کد زیر یک اسکریپت همه‌کاره است. آن را به طور کامل کپی کرده و در ترمینال روتر پیست کنید. این اسکریپت تمام فایل‌های ساختاری لوسی، تنظیمات UCI، کدهای جاوااسکریپت داشبورد (همراه با دکمه‌ها و فیلدهای کامل) و مجوزهای امنیتی را به صورت یکجا ایجاد می‌کند:
 
 ===================================================================
-# GROUP 1 (Priority 1): Core Permissions & RPCD ACL
-# GROUP 2 (Priority 2): Base UCI Configuration
-# GROUP 3 (Priority 3): LuCI Menu Registration
-# GROUP 4 (Priority 4): Init.d Service Script Generation
-# GROUP 5 (Priority 5): Firewall and Routing Configurations
-# GROUP 6 (Priority 6): LuCI Frontend (View Script)
-# GROUP 7 (Priority 7): Service Restart & Cache Cleanup
+GROUP 1 (Priority 1): Core Permissions & RPCD ACL
+GROUP 2 (Priority 2): Base UCI Configuration
+GROUP 3 (Priority 3): LuCI Menu Registration
+GROUP 4 (Priority 4): Init.d Service Script Generation
+GROUP 5 (Priority 5): Firewall and Routing Configurations
+GROUP 6 (Priority 6): LuCI Frontend (View Script)
+GROUP 7 (Priority 7): Service Restart & Cache Cleanup
 ===================================================================
 
 ```bash
