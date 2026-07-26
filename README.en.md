@@ -1,8 +1,6 @@
 **English** | [پارسی](README.md)
 
 
-[Persian](README.md) | **English**
-
 Comprehensive guide for installation, setup, and automation of Psiphon-Core along with the LuCI graphical panel in OpenWrt 25.
 This project is a fully native and operational guide for compiling, configuring, and connecting the Psiphon Linux core (`psiphon-core`) to the LuCI JavaScript graphical user interface on OpenWrt 25. All service control keys, configuration fields (ports, country, protocol), and IP status monitoring sections are fully synchronized with zero overhead on router RAM and CPU.
 
