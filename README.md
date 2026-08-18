@@ -8,25 +8,30 @@
 
 برای نصب سریع، کافیست از طریق نرم‌افزارهای SSH (مانند PuTTY یا Terminal) به روتر خود متصل شوید و دستور زیر را اجرا کنید:
 
-**روش اول: اجرای دستور اصلاح‌شده**
-دستور زیر را بدون کاراکتر اضافه اجرا کنید:
+
+
+### روش اول: اجرای دستور اصلاح‌شده
+
+این روش تغییری نمی‌کند و فقط کافی است کاراکتر اضافه‌ی `[` را از ابتدای دستور حذف کنید:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh | sh
 
 ```
 
-**روش دوم: نصب curl و وابستگی‌های SSL (پیشنهادشده)**
-در صورتی که `wget` روتر از HTTPS پشتیبانی نمی‌کند، ابزار `curl` و گواهی‌ها را نصب کرده و اجرا کنید:
+### روش دوم: نصب curl و وابستگی‌های SSL (مخصوص OpenWrt 25)
+
+در اینجا دستورات `opkg` با `apk` جایگزین شده‌اند تا روی OpenWrt 25 بدون مشکل اجرا شوند:
 
 ```bash
-opkg update && opkg install curl ca-bundle ca-certificates
+apk update && apk add curl ca-bundle ca-certificates
 curl -sL https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh | sh
 
 ```
 
-**روش سوم: دانلود جداگانه فایل و اجرای آن**
-اگر دانلود مستقیم همزمان با اجرا کماکان خطا می‌دهد، اسکریپت را ابتدا روی روتر ذخیره و سپس اجرا کنید:
+### روش سوم: دانلود جداگانه فایل و اجرای آن
+
+اگر ابزار `wget` پیش‌فرض همچنان خطا می‌دهد، می‌توانید با دور زدن بررسی گواهی SSL، فایل را دانلود و سپس اجرا کنید (این دستورات نیز نیازی به تغییر ندارند):
 
 ```bash
 wget --no-check-certificate -O install.sh https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh
