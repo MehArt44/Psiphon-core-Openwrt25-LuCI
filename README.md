@@ -4,42 +4,20 @@
 این پروژه یک راهنمای کاملاً بومی و عملیاتی برای کامپایل، کانفیگ و اتصال هسته لینوکسی سایفون (psiphon-core) به رابط کاربری گرافیکی لوسی (LuCI JavaScript) در سیستم‌عامل OpenWrt 25 است. تمامی کلیدهای کنترل سرویس، فیلدهای تنظیمات (پورت‌ها، کشور، پروتکل) و بخش مانیتورینگ وضعیت آی‌پی کاملاً همگام‌سازی شده‌اند. بدون سربار روی رم و سی پی یو روتر
 
 
-## 🚀 آموزش نصب آسان (Installation) سه روش
+## 🚀 آموزش نصب آسان (Installation)
 
 برای نصب سریع، کافیست از طریق نرم‌افزارهای SSH (مانند PuTTY یا Terminal) به روتر خود متصل شوید و دستور زیر را اجرا کنید:
-
-
-
-### روش اول: اجرای دستور اصلاح‌شده
-
-این روش تغییری نمی‌کند و فقط کافی است کاراکتر اضافه‌ی `[` را از ابتدای دستور حذف کنید:
+:
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh | sh
+
+wget -O /tmp/install.sh https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh
+
+sh /tmp/install.sh
+
+
 
 ```
-
-### روش دوم: نصب curl و وابستگی‌های SSL (مخصوص OpenWrt 25)
-
-در اینجا دستورات `opkg` با `apk` جایگزین شده‌اند تا روی OpenWrt 25 بدون مشکل اجرا شوند:
-
-```bash
-apk update && apk add curl ca-bundle ca-certificates
-curl -sL https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh | sh
-
-```
-
-### روش سوم: دانلود جداگانه فایل و اجرای آن
-
-اگر ابزار `wget` پیش‌فرض همچنان خطا می‌دهد، می‌توانید با دور زدن بررسی گواهی SSL، فایل را دانلود و سپس اجرا کنید (این دستورات نیز نیازی به تغییر ندارند):
-
-```bash
-wget --no-check-certificate -O install.sh https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh
-chmod +x install.sh
-./install.sh
-
-```
-
 
 
 
