@@ -32,7 +32,7 @@ DATA_URL="https://github.com/$REPO/releases/download/$VERSION/psiphon_data"
 mkdir -p /usr/bin /etc/psiphon
 
 echo "[*] Downloading psiphon-core ($DL_ARCH) to /usr/bin/psiphon-core..."
-wget -O /usr/bin/psiphon-core "$BIN_URL"
+wget --no-check-certificate -O /usr/bin/psiphon-core "$BIN_URL"
 
 if [ $? -ne 0 ]; then
     echo "[!] Error downloading psiphon-core. Check connection or release URL."
@@ -43,15 +43,7 @@ chmod +x /usr/bin/psiphon-core
 echo "[+] psiphon-core successfully installed in /usr/bin/"
 
 echo "[*] Downloading psiphon_data..."
-wget -O /etc/psiphon/psiphon_data "$DATA_URL" 2>/dev/null || echo "[!] Note: psiphon_data skipped or using defaults."
-
-# ==================================================
-# گام ۲: اعمال کانفیگ‌ها و ساخت فایل‌های سیستم
-# ==================================================
-
-# Applying Configurations (Groups 1-7)..."
-
-#!/bin/sh
+wget --no-check-certificate -O /etc/psiphon/psiphon_data "$DATA_URL" 2>/dev/null || echo "[!] Note: psiphon_data skipped or using defaults."
 
 # ==============================================================================
 # GROUP 1: Core Permissions & RPCD ACL
@@ -909,5 +901,7 @@ rm -rf /tmp/luci-indexcache* /tmp/luci-modulecache/ /var/luci-indexcache*
 chmod +x /etc/init.d/psiphon
 
 /etc/init.d/psiphon restart
+
+
 
 echo "Setup Completed Successfully! All optimizations applied."
