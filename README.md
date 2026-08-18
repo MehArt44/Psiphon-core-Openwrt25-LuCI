@@ -36,6 +36,8 @@ chmod +x install.sh
 ```
 
 
+
+
 ## 🚀 آموزش نصب دستی (Installation)
 
 
