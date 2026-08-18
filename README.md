@@ -55,8 +55,7 @@ go build -o psiphon-core .
 پس از اتمام کامپایل، فایل خروجی `psiphon-core` و پوشه `psiphon_data` را از طریق ابزارهایی مانند MobaXterm یا SCP به مسیرهای زیر روی روتر منتقل کنید[cite: 
 
 ```bash
-1. `/usr/bin/psiphon_data/`
-2. `/usr/bin/psiphon-core`
+ `/usr/bin/psiphon-core`
 ```
 
 # 📁 ۳. استقرار زیرساخت و کدهای کامل پنل گرافیکی
