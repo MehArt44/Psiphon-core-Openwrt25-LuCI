@@ -1,56 +1,142 @@
 #!/bin/sh
+# ==============================================================================
+# Psiphon Core for OpenWrt 25 / LuCI — One-Click Installer
+# Repo: https://github.com/MehArt44/Psiphon-core-Openwrt25-LuCI
+#
+# اجرا روی روتر:
+#   wget -O /tmp/install.sh https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh
+#   sh /tmp/install.sh
+# ==============================================================================
 
-echo "=================================================="
-echo "  Psiphon-core-Openwrt25-LuCI Auto Installer     "
-echo "  Version: v2.0.40                               "
-echo "=================================================="
+set -e
 
-REPO="MehArt44/Psiphon-core-Openwrt25-LuCI"
-VERSION="v2.0.40"
+REPO_TAG="2.0.40"
+BASE_URL="https://github.com/MehArt44/Psiphon-core-Openwrt25-LuCI/releases/download/${REPO_TAG}"
+BIN_PATH="/usr/bin/psiphon-core"
+TMP_BIN="/tmp/psiphon-core.download"
 
-# ==================================================
-# گام ۱: شناسایی معماری، دانلود و قرارگیری در /usr/bin
-# ==================================================
-ARCH=$(uname -m)
-echo "[*] Step 1: Detecting CPU Architecture: $ARCH"
+echo "=============================================="
+echo " Psiphon Core Installer for OpenWrt / LuCI"
+echo "=============================================="
 
-case "$ARCH" in
-    x86_64)           DL_ARCH="amd64" ;;
-    i386|i486|i586|i686) DL_ARCH="386" ;;
-    aarch64)          DL_ARCH="arm64" ;;
-    armv7l|armv7)     DL_ARCH="armv7" ;;
-    armv5tejl|armv5)  DL_ARCH="armv5" ;;
-    mips)             DL_ARCH="mips" ;;
-    mipsel)           DL_ARCH="mipsle" ;;
-    mips64el)         DL_ARCH="mips64le" ;;
-    *) echo "[!] Unsupported architecture: $ARCH"; exit 1 ;;
-esac
-
-BIN_URL="https://github.com/$REPO/releases/download/$VERSION/psiphon-core-$DL_ARCH"
-DATA_URL="https://github.com/$REPO/releases/download/$VERSION/psiphon_data"
-
-mkdir -p /usr/bin /etc/psiphon
-
-echo "[*] Downloading psiphon-core ($DL_ARCH) to /usr/bin/psiphon-core..."
-wget --no-check-certificate -O /usr/bin/psiphon-core "$BIN_URL"
-
-if [ $? -ne 0 ]; then
-    echo "[!] Error downloading psiphon-core. Check connection or release URL."
+# ==============================================================================
+# مرحله ۰: بررسی پیش‌نیازها (باید یکی از wget یا curl موجود باشد)
+# ------------------------------------------------------------------------------
+# روی اکثر روترهای OpenWrt به‌صورت پیش‌فرض busybox wget نصب است؛ این بخش هر دو
+# را چک می‌کند تا اسکریپت روی هر دستگاهی بدون خطا اجرا شود.
+# ==============================================================================
+if command -v wget >/dev/null 2>&1; then
+    DOWNLOADER="wget"
+elif command -v curl >/dev/null 2>&1; then
+    DOWNLOADER="curl"
+else
+    echo "خطا: هیچ‌کدام از wget یا curl روی این روتر نصب نیست."
+    echo "ابتدا با دستور: opkg update && opkg install wget-ssl   نصب کنید."
     exit 1
 fi
 
-chmod +x /usr/bin/psiphon-core
-echo "[+] psiphon-core successfully installed in /usr/bin/"
-
-echo "[*] Downloading psiphon_data..."
-wget --no-check-certificate -O /etc/psiphon/psiphon_data "$DATA_URL" 2>/dev/null || echo "[!] Note: psiphon_data skipped or using defaults."
+download_file() {
+    # $1 = URL   $2 = مسیر مقصد
+    if [ "$DOWNLOADER" = "wget" ]; then
+        wget -q --show-progress -O "$2" "$1" || wget -q -O "$2" "$1"
+    else
+        curl -fSL -o "$2" "$1"
+    fi
+}
 
 # ==============================================================================
-# GROUP 1: Core Permissions & RPCD ACL
+# مرحله ۱: شناسایی معماری CPU روتر
+# ------------------------------------------------------------------------------
+# خروجی uname -m به یکی از فرم‌های رایج ARM/MIPS/x86 ترجمه می‌شود تا نام درست
+# فایل باینری منتشر شده در ریلیز گیت‌هاب انتخاب گردد.
 # ==============================================================================
-echo "Creating LuCI RPCD Access Permissions..."
+echo ""
+echo "[1/5] شناسایی معماری پردازنده..."
+RAW_ARCH=$(uname -m)
+echo "      خروجی uname -m: ${RAW_ARCH}"
 
-chmod +x /usr/bin/psiphon-core
+case "$RAW_ARCH" in
+    x86_64|amd64)
+        ARCH="amd64"
+        ;;
+    i386|i486|i586|i686)
+        ARCH="386"
+        ;;
+    aarch64|aarch64_be|arm64)
+        ARCH="arm64"
+        ;;
+    armv7*|armv6l)
+        ARCH="armv7"
+        ;;
+    armv5*|armv4*|arm)
+        ARCH="armv5"
+        ;;
+    mips)
+        # تشخیص endianness برای مسیرهای MIPS خالص (بدون le/be در uname)
+        if echo -n I | od -to2 | head -n1 | grep -qE '01[[:space:]]*$'; then
+            ARCH="mipsle"
+        else
+            ARCH="mips"
+        fi
+        ;;
+    mipsel|mipsle)
+        ARCH="mipsle"
+        ;;
+    mips64|mips64el|mips64le)
+        ARCH="mips64le"
+        ;;
+    *)
+        echo "خطا: معماری '${RAW_ARCH}' پشتیبانی نمی‌شود."
+        echo "معماری‌های پشتیبانی‌شده: 386, amd64, arm64, armv5, armv7, mips, mipsle, mips64le"
+        exit 1
+        ;;
+esac
+echo "      معماری انتخاب‌شده برای دانلود: ${ARCH}"
+
+# ==============================================================================
+# مرحله ۲: دانلود باینری متناظر از ریلیز گیت‌هاب
+# ------------------------------------------------------------------------------
+# فایل ابتدا در /tmp دانلود می‌شود تا در صورت قطع‌شدن دانلود یا خرابی فایل،
+# نسخه‌ی قبلاً نصب‌شده (در صورت وجود) دست‌نخورده باقی بماند.
+# ==============================================================================
+echo ""
+echo "[2/5] دانلود psiphon-core-${ARCH} ..."
+DOWNLOAD_URL="${BASE_URL}/psiphon-core-${ARCH}"
+download_file "$DOWNLOAD_URL" "$TMP_BIN"
+
+if [ ! -s "$TMP_BIN" ]; then
+    echo "خطا: دانلود ناموفق بود یا فایل خالی است. لینک را بررسی کنید:"
+    echo "      $DOWNLOAD_URL"
+    exit 1
+fi
+echo "      دانلود با موفقیت انجام شد."
+
+# ==============================================================================
+# مرحله ۳ و ۴: انتقال به /usr/bin/ و تغییر نام به psiphon-core
+# ------------------------------------------------------------------------------
+# اگر سرویس از قبل در حال اجرا باشد، ابتدا متوقف می‌شود تا فایل باینری در حال
+# استفاده جایگزین نشود (جلوگیری از خطای "Text file busy").
+# ==============================================================================
+echo ""
+echo "[3/5] نصب باینری در ${BIN_PATH} ..."
+[ -x /etc/init.d/psiphon ] && /etc/init.d/psiphon stop >/dev/null 2>&1 || true
+
+mv -f "$TMP_BIN" "$BIN_PATH"
+chmod +x "$BIN_PATH"
+echo "      باینری با موفقیت در ${BIN_PATH} قرار گرفت."
+
+# ==============================================================================
+# مرحله ۵: اعمال کانفیگ‌ها و ساخت فایل‌های سیستم (گروه‌های ۱ تا ۷)
+# ==============================================================================
+echo ""
+echo "[4/5] اعمال کانفیگ‌ها (Groups 1-7)..."
+
+# ------------------------------------------------------------------------------
+# GROUP 1: دسترسی‌های RPCD ACL
+# این بخش به رابط کاربری LuCI اجازه می‌دهد سرویس را استارت/استاپ کند و لاگ را بخواند.
+# ------------------------------------------------------------------------------
+echo "  -> ساخت مجوزهای دسترسی LuCI (RPCD ACL)..."
+
 mkdir -p /etc/psiphon
 mkdir -p /usr/share/rpcd/acl.d/
 
@@ -80,10 +166,11 @@ cat << 'EOF' > /usr/share/rpcd/acl.d/luci-app-psiphon.json
 }
 EOF
 
-# ==============================================================================
-# GROUP 2: Base UCI Configuration (Optimized with Batch)
-# ==============================================================================
-echo "Creating base config file..."
+# ------------------------------------------------------------------------------
+# GROUP 2: فایل کانفیگ پایه UCI
+# مقادیر پیش‌فرض سرویس (خاموش، بدون تونل کامل) در /etc/config/psiphon ذخیره می‌شود.
+# ------------------------------------------------------------------------------
+echo "  -> ساخت فایل کانفیگ پایه (UCI)..."
 
 touch /etc/config/psiphon
 uci -q batch <<-EOF
@@ -102,10 +189,11 @@ uci -q batch <<-EOF
 	commit psiphon
 EOF
 
-# ==============================================================================
-# GROUP 3: LuCI Menu Registration
-# ==============================================================================
-echo "Creating LuCI menu entry under VPN..."
+# ------------------------------------------------------------------------------
+# GROUP 3: ثبت منوی LuCI
+# یک زیرمنوی "Psiphon VPN" داخل منوی VPN پنل مدیریت روتر اضافه می‌شود.
+# ------------------------------------------------------------------------------
+echo "  -> ثبت آیتم منو در LuCI..."
 
 mkdir -p /usr/share/luci/menu.d/
 cat << 'EOF' > /usr/share/luci/menu.d/luci-app-psiphon.json
@@ -134,10 +222,12 @@ cat << 'EOF' > /usr/share/luci/menu.d/luci-app-psiphon.json
 }
 EOF
 
-# ==============================================================================
-# GROUP 4: Init.d Script with Boltdb Logic (Procd Managed & Random Ports)
-# ==============================================================================
-echo "Generating Init.d script with smart procd management..."
+# ------------------------------------------------------------------------------
+# GROUP 4: اسکریپت init.d همراه با مدیریت Boltdb (Procd)
+# سرویس systemd-مانند OpenWrt (procd) که خودِ psiphon-core و یک نگهبان
+# پشتیبان‌گیری از دیتابیس سرورهای شناخته‌شده (boltdb) را مدیریت می‌کند.
+# ------------------------------------------------------------------------------
+echo "  -> ساخت اسکریپت init.d (مدیریت هوشمند procd)..."
 
 cat << 'EOF' > /etc/init.d/psiphon
 #!/bin/sh /etc/rc.common
@@ -326,10 +416,12 @@ reload_service() {
 }
 EOF
 
-# ==============================================================================
-# GROUP 5: Firewall and Routing Configurations
-# ==============================================================================
-echo "Configuring Firewall Zones..."
+# ------------------------------------------------------------------------------
+# GROUP 5: تنظیمات فایروال و مسیریابی
+# یک zone فایروال مجزا به نام psiphon روی دستگاه tun0 ساخته می‌شود و ترافیک
+# شبکه‌ی lan به آن forward می‌شود.
+# ------------------------------------------------------------------------------
+echo "  -> پیکربندی زون‌های فایروال..."
 
 for sec in $(uci show firewall | grep -E "name='psiphon'|dest='psiphon'|src='psiphon'" | cut -d. -f1,2); do
     uci -q delete "$sec"
@@ -352,10 +444,11 @@ uci -q batch <<-EOF
 	commit firewall
 EOF
 
-# ==============================================================================
-# GROUP 6: LuCI Frontend (View Script) - Updated UI & Fixes
-# ==============================================================================
-echo "Updating Psiphon View Script..."
+# ------------------------------------------------------------------------------
+# GROUP 6: فایل فرانت‌اند LuCI (رابط گرافیکی صفحه‌ی VPN)
+# صفحه‌ی تک‌برگه‌ای مدیریت (وضعیت IP، لاگ زنده، کنترل روشن/خاموش) ساخته می‌شود.
+# ------------------------------------------------------------------------------
+echo "  -> به‌روزرسانی رابط گرافیکی (View Script)..."
 
 mkdir -p /www/luci-static/resources/view/vpn/
 cat << 'EOF' > /www/luci-static/resources/view/vpn/psiphon.js
@@ -889,19 +982,28 @@ return view.extend({
 });
 EOF
 
-# ==============================================================================
-# GROUP 7: Service Restart & Cache Cleanup
-# ==============================================================================
-echo "Clearing cache and restarting UI..."
+# ------------------------------------------------------------------------------
+# GROUP 7: ری‌استارت سرویس‌ها و پاک‌سازی کش
+# کش LuCI پاک می‌شود تا منوی جدید بلافاصله نمایش داده شود، سپس rpcd/uhttpd/
+# firewall و در پایان خودِ سرویس psiphon ری‌استارت می‌شوند.
+# ------------------------------------------------------------------------------
+echo "  -> پاک‌سازی کش و ری‌استارت سرویس‌ها..."
 
 rm -rf /tmp/luci-indexcache* /tmp/luci-modulecache/ /var/luci-indexcache*
 /etc/init.d/rpcd restart
 /etc/init.d/uhttpd restart
 /etc/init.d/firewall restart
 chmod +x /etc/init.d/psiphon
-
+/etc/init.d/psiphon enable
 /etc/init.d/psiphon restart
 
-
-
-echo "Setup Completed Successfully! All optimizations applied."
+# ==============================================================================
+# پایان نصب
+# ==============================================================================
+echo ""
+echo "[5/5] نصب با موفقیت به پایان رسید."
+echo "=============================================="
+echo " نصب کامل شد!"
+echo " برای مدیریت به مسیر زیر در پنل روتر بروید:"
+echo "   Network -> VPN -> Psiphon VPN"
+echo "=============================================="
