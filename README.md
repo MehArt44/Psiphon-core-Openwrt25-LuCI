@@ -52,3 +52,16 @@ sh "/tmp/Uninstall.sh"
 
 ## محیط Luci برای سایفون
 
+<img width="1616" height="1602" alt="image" src="https://github.com/user-attachments/assets/a3460d87-24bc-4907-afa6-a63d4523b88f" />
+
+
+```bash
+https://browserleaks.com/dns
+https://browserleaks.com/ip
+
+```
+<img width="1578" height="1589" alt="image" src="https://github.com/user-attachments/assets/a96214aa-08a6-407f-823a-779e26be24d6" />
+
+
+
+
