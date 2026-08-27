@@ -50,8 +50,9 @@ sh "/tmp/Psiphon VPN 2.0.40.sh"
 sh "/tmp/Uninstall.sh"
 ```
 
-## محیط Luci برای سایفون
+##محیط Luci برای سایفون
 
+توجه داشته باشید بعد از هر تغییر Save & Apply بزنید ، بعد Start را بزنید
 <img width="1616" height="1602" alt="image" src="https://github.com/user-attachments/assets/a3460d87-24bc-4907-afa6-a63d4523b88f" />
 
 
