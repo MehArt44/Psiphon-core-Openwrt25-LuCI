@@ -24,36 +24,20 @@ sh /tmp/install.sh
 ## 🚀 آموزش نصب دستی (Installation)
 
 
-✅توجه: برای اکثر معماری سی پی یو روترهای مختلف کامپایل انجام شده اگر سخت بود یا موفق نشدید از قسمت Releases استفاده کنید ✅ 
+# 🛠️ ۱. دانلود فایل مناسب روتر از بخش Releases
+شناسایی معماری روتر دستور زیر در روتر بزنید
 
-# 🛠️ ۱. آموزش کامپایل فایل باینری (روی کامپیوتر) – PowerShell / کامپایل شده برای چند معماری CPU
-برای ساخت فایل اجرایی اختصاصی روتر خود، ابتدا مطمئن شوید زبان Go روی سیستم شما نصب است. سپس ترمینال را باز کرده و بر اساس معماری پردازنده روتر خود، دستورات زیر را اجرا کنید
-
-
-دریافت سورس کد رسمی هسته سایفون از مخزن گیت‌هاب
 ```bash
-git clone https://github.com/Psiphon-Labs/psiphon-tunnel-core.git
-cd psiphon-tunnel-core/ConsoleClient
+
+uname -m
+
 ```
 
- کامپایل برای روترهای ۶۴ بیتی (Aarch64 / ARM64 مانند GL.iNet MT3000 / MT2500)
-```bash
-$env:GOOS="linux"
-$env:GOARCH="arm64"
-go build -o psiphon-core .
-```
- کامپایل برای روترهای ۳۲ بیتی (ARMv7 مانند Google Wifi AC-1304)
-```bash
-$env:GOOS="linux"
-$env:GOARCH="arm"
-$env:GOARM="7"
-go build -o psiphon-core .
-```
 
 # 🚀 ۲. انتقال فایل‌ها به روتر
 
-پس از اتمام کامپایل، فایل خروجی `psiphon-core` و پوشه `psiphon_data` را از طریق ابزارهایی مانند MobaXterm یا SCP به مسیرهای زیر روی روتر منتقل کنید[cite: 
-
+پس از اتمام کامپایل، فایل خروجی `psiphon-core` و پوشه `psiphon_data` را از طریق ابزارهایی مانند MobaXterm یا SCP به مسیرهای زیر روی روتر منتقل کنید 
+اگر کام
 ```bash
  `/usr/bin/psiphon-core`
 ```
