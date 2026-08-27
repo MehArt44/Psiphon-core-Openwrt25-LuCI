@@ -47,7 +47,7 @@ sh "/tmp/Psiphon VPN 2.0.40.sh"
 
 انتقال فایل به داخل روتر / و اجرای دستور زیر
 ```bash
-sh /tmp/Uninstall.sh
+sh "/tmp/Uninstall.sh"
 ```
 
 ## محیط Luci برای سایفون
