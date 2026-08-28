@@ -69,8 +69,8 @@ sh "/tmp/Uninstall.sh"
 
 
 ```bash
-https://browserleaks.com/dns](https://browserleaks.com/dns
-https://browserleaks.com/ip](https://browserleaks.com/ip
+https://browserleaks.com/dns
+https://browserleaks.com/ip
 ```
 <img width="1578" height="1589" alt="image" src="https://github.com/user-attachments/assets/a96214aa-08a6-407f-823a-779e26be24d6" />
 
