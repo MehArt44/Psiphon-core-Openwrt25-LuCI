@@ -11,17 +11,6 @@
 MobaXterm / SCP
 
 ```bash
-wget -O /tmp/install.sh https://raw.githubusercontent**英语** | [波斯语](README.md)
-
-在 OpenWrt 25 上安装、设置和自动化 Psiphon-Core 及其 LuCI 图形面板的指南。
-
-本项目是一个完全可操作的指南，用于将 Psiphon Linux 核心 (psiphon-core) 连接到 OpenWrt 25 操作系统上的 LuCI JavaScript 图形用户界面。所有服务控制按钮、配置字段（端口、国家/地区、协议）以及 IP 状态监控 / 防止 DNS 泄漏部分均已完全同步。
-
-## 🚀 简易安装指南
-
-为了快速安装，只需通过 SSH 客户端（如 PuTTY 或终端）连接到您的路由器，并运行以下命令：
-
-```bash
 wget -O /tmp/install.sh [https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh](https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh)
 sh /tmp/install.sh
 
