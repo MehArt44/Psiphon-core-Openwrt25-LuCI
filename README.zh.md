@@ -7,11 +7,13 @@
 
 ## 🚀 简易安装指南
 
-要快速安装，只需通过 SSH 客户端（如 PuTTY 或终端）连接到您的路由器，然后运行以下命令：
+要快速安装，只需通过 SSH 客户端（ PuTTY / Terminal）连接到您的路由器，然后运行以下命令：
 MobaXterm / SCP
 
 ```bash
-wget -O /tmp/install.sh [https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh](https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh)
+
+wget -O /tmp/install.sh https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh
+
 sh /tmp/install.sh
 
 ```
