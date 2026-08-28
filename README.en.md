@@ -1,5 +1,5 @@
 
-**English** | [Persian](README.md)
+**English** | [Persian](README.md) | [Chinese](README.zh.md)
 
 
 
