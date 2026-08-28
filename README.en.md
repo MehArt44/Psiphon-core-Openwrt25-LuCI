@@ -1,4 +1,7 @@
-**Persian** | [English](README.en.md)
+
+**English** | [Persian](README.md)
+
+
 
 Guide for installing, setting up, and automating Psiphon-Core along with a graphical LuCI panel on OpenWrt 25.
 
