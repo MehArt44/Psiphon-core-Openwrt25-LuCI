@@ -8,6 +8,7 @@
 ## 🚀 简易安装指南
 
 要快速安装，只需通过 SSH 客户端（如 PuTTY 或终端）连接到您的路由器，然后运行以下命令：
+MobaXterm / SCP
 
 ```bash
 wget -O /tmp/install.sh https://raw.githubusercontent**英语** | [波斯语](README.md)
@@ -75,7 +76,7 @@ sh "/tmp/Uninstall.sh"
 注意：每次更改后，请点击 **Save & Apply**（保存并应用），然后点击 **Start**（启动）。
 
 ```bash
-[https://browserleaks.com/dns](https://browserleaks.com/dns)
-[https://browserleaks.com/ip](https://browserleaks.com/ip)
+https://browserleaks.com/dns](https://browserleaks.com/dns
+https://browserleaks.com/ip](https://browserleaks.com/ip
 
 ```
