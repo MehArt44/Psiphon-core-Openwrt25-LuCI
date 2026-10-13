@@ -42,14 +42,14 @@ uname -m
 
 **📁 3. 部署基础架构及完整图形面板代码**
 
-将文件 `Psiphon VPN 2.0.40.sh` 移动到以下文件夹：
+将文件 `Psiphon VPN 2.0.40_manual.setup.sh` 移动到以下文件夹：
 
-`"/tmp/Psiphon VPN 2.0.40.sh"`
+`"/tmp/Psiphon VPN 2.0.40_manual.setup.sh"`
 
 并运行以下命令：
 
 ```bash
-sh "/tmp/Psiphon VPN 2.0.40.sh"
+sh "/tmp/Psiphon VPN 2.0.40_manual.setup.sh"
 
 ```
 
