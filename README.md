@@ -34,12 +34,20 @@ uname -m
 
  📁 ۳. استقرار زیرساخت و کدهای کامل پنل گرافیکی
 
-فایل Psiphon VPN 2.0.40.sh به پوشه زیر
+فایل Psiphon VPN 2.0.40_manual.setup.sh به پوشه زیر
  منتقل کنید و دستور زیر اجرا کنید
-"/tmp/Psiphon VPN 2.0.40.sh"
+"/tmp/Psiphon VPN 2.0.40_manual.setup.sh"
 
 ```bash
-sh "/tmp/Psiphon VPN 2.0.40.sh"
+sh "/tmp/Psiphon VPN 2.0.40_manual.setup.sh"
+```
+ ✅ . شروع به کار
+ Auto Connect (Enable) , Full Tunnel Mode  فعال کنید
+2. با هر تغییر برای ذخیره در تنظیمات Save & Apply را باید بزنید
+3. کلید Start را بزنید تا این دوتا فایل و پوشه ساخته شود
+```bash
+ "/etc/psiphon/ca.psiphon.PsiphonTunnel.tunnel-core/datastore/psiphon.boltdb"
+ "/etc/psiphon/psiphon.config"
 ```
 
 
