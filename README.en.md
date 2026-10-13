@@ -38,14 +38,14 @@ uname -m
 
 **📁 3. Deploy the infrastructure and full graphical panel code**
 
-Move the file `Psiphon VPN 2.0.40.sh` to the following folder:
+Move the file `Psiphon VPN 2.0.40_manual.setup.sh` to the following folder:
 
-`"/tmp/Psiphon VPN 2.0.40.sh"`
+`"/tmp/Psiphon VPN 2.0.40_manual.setup.sh"`
 
 and run the following command:
 
 ```bash
-sh "/tmp/Psiphon VPN 2.0.40.sh"
+sh "/tmp/Psiphon VPN 2.0.40_manual.setup.sh"
 ```
 
 # 🗑️ Complete and Irreversible Removal of Psiphon from the System (Uninstall)
