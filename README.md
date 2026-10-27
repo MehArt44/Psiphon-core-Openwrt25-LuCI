@@ -61,7 +61,13 @@ sh "/tmp/Uninstall.sh"
 ##محیط Luci برای سایفون
 
 توجه داشته باشید بعد از هر تغییر Save & Apply بزنید ، بعد Start را بزنید
-<img width="1616" height="1602" alt="image" src="https://github.com/user-attachments/assets/a3460d87-24bc-4907-afa6-a63d4523b88f" />
+
+<img width="1992" height="1912" alt="Psiphon VPN" src="https://github.com/user-attachments/assets/71b58768-c9d6-455a-a47a-9973182afa96" />
+
+ Save & Apply 
+<img width="734" height="1274" alt="image" src="https://github.com/user-attachments/assets/298ec61e-ed5c-4a87-a59a-da9ee662972e" />
+
+
 
 
 ```bash
@@ -69,7 +75,8 @@ https://browserleaks.com/dns
 https://browserleaks.com/ip
 
 ```
-<img width="1578" height="1589" alt="image" src="https://github.com/user-attachments/assets/a96214aa-08a6-407f-823a-779e26be24d6" />
+<img width="1572" height="1472" alt="image" src="https://github.com/user-attachments/assets/a9f5d3bf-5246-4025-aa10-36f1231e04d8" />
+
 
 
 
