@@ -13,6 +13,7 @@
 ```bash
 wget -O /tmp/install.sh https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh
 sh /tmp/install.sh
+
 ```
 
 > ⏳ دانلود و نصب ممکن است تا ۱۰ دقیقه طول بکشد؛ لطفاً صبر کنید.
