@@ -13,6 +13,7 @@ For a quick install, simply connect to your router via an SSH client (such as Pu
 ```bash
 wget -O /tmp/install.sh https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh
 sh /tmp/install.sh
+
 ```
 
 > ⏳ Download and installation may take up to 10 minutes; please be patient.
