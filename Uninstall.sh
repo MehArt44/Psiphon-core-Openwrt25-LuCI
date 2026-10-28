@@ -11,13 +11,16 @@
 #        dnsmasq upstreams that the service had isolated
 #   3. removes the installed files + the firewall zone/forwarding
 #   4. removes the entries the installer added to /etc/sysupgrade.conf
-#   5. (optional) purges config / datastore / core binary / extra packages
+#   5. (optional) purges config / datastore / core binary / extra packages and
+#      sweeps EVERY file / folder / symlink whose name contains "psiphon"
 #   6. reloads firewall, dnsmasq, rpcd, uhttpd and verifies nothing is left over
 #
 # Usage: sh Uninstall.sh [options]
 #   -y, --yes          do not ask for confirmation
 #   --purge            also delete /etc/config/psiphon, /etc/psiphon (datastore)
-#                      and /usr/bin/psiphon-core
+#                      and /usr/bin/psiphon-core, then sweep the whole system and
+#                      delete EVERY file / folder whose name contains "psiphon"
+#                      (case-insensitive; /proc /sys /dev /rom /overlay /mnt /media skipped)
 #   --remove-deps      also remove https-dns-proxy and tcpdump (installed by the
 #                      installer; do NOT use if other services need them)
 #   --reset-confdir    unset dnsmasq 'confdir' if it is still /tmp/dnsmasq.d
@@ -32,7 +35,9 @@ usage() {
 Usage: sh Uninstall.sh [options]
   -y, --yes          do not ask for confirmation
   --purge            also delete /etc/config/psiphon, /etc/psiphon (datastore)
-                     and /usr/bin/psiphon-core
+                     and /usr/bin/psiphon-core, then sweep the whole system and
+                     delete EVERY file / folder whose name contains "psiphon"
+                     (case-insensitive; /proc /sys /dev /rom /overlay /mnt /media skipped)
   --remove-deps      also remove https-dns-proxy and tcpdump (installed by the
                      installer; do NOT use if other services need them)
   --reset-confdir    unset dnsmasq 'confdir' if it is still /tmp/dnsmasq.d
@@ -107,6 +112,7 @@ echo "  - stop the service, release Kill Switch, restore DNS / IPv6 / routing"
 echo "  - remove LuCI app, init script, helper, hotplug, ACL, menu, firewall zone"
 if [ "$PSI_PURGE" = 1 ]; then
 	echo "  - PURGE: delete /etc/config/psiphon, /etc/psiphon (datastore) and $CORE"
+	echo "  - PURGE: sweep the whole system and delete EVERY file/folder whose name contains 'psiphon'"
 else
 	echo "  - keep /etc/config/psiphon, /etc/psiphon and $CORE (use --purge to remove)"
 fi
@@ -321,10 +327,48 @@ else
 fi
 
 # ---- 5. optional purge / packages / confdir ---------------------------------
+# List every file / directory / symlink whose NAME contains "psiphon" (any case).
+# Virtual, read-only and external mounts are skipped. A matching directory is
+# listed once and not descended into. Optional $1 = alternative root (testing).
+psi_find_named() {
+	local _r="${1:-}"
+	find "${_r:-/}" \( -path "$_r/proc" -o -path "$_r/sys" -o -path "$_r/dev" -o -path "$_r/rom" \
+		-o -path "$_r/overlay" -o -path "$_r/mnt" -o -path "$_r/media" \) -prune -o \
+		\( -name '*[Pp][Ss][Ii][Pp][Hh][Oo][Nn]*' -print -prune \) 2>/dev/null
+}
+
+# Delete everything psi_find_named reports (never this script itself).
+# Sets SWEEP_OK / SWEEP_FAIL. Optional $1 = alternative root (testing).
+psi_sweep() {
+	local _list _p _self
+	SWEEP_OK=0; SWEEP_FAIL=0
+	_self=$(readlink -f "$0" 2>/dev/null)
+	_list=$(mktemp 2>/dev/null) || _list=/tmp/.uninstall-sweep.$$
+	psi_find_named "$1" > "$_list"
+	while IFS= read -r _p; do
+		[ -n "$_p" ] || continue
+		[ "$_p" = "$_list" ] && continue
+		[ -n "$_self" ] && [ "$_p" = "$_self" ] && continue
+		{ [ -e "$_p" ] || [ -L "$_p" ]; } || continue
+		rm -rf -- "$_p" 2>/dev/null
+		if [ -e "$_p" ] || [ -L "$_p" ]; then
+			warn "could not remove $_p"; SWEEP_FAIL=$((SWEEP_FAIL+1))
+		else
+			note "removed $_p"; SWEEP_OK=$((SWEEP_OK+1))
+		fi
+	done < "$_list"
+	rm -f "$_list"
+}
+
 if [ "$PSI_PURGE" = 1 ]; then
 	step "Purging data"
 	rm -rf /etc/config/psiphon /etc/psiphon "$CORE"
 	ok "removed /etc/config/psiphon, /etc/psiphon and $CORE"
+
+	step "Sweeping every file/folder named *psiphon* (case-insensitive)"
+	psi_sweep
+	if [ "$SWEEP_OK" -gt 0 ]; then ok "swept $SWEEP_OK item(s) named *psiphon*"; else note "nothing else named *psiphon* was found"; fi
+	[ "$SWEEP_FAIL" -gt 0 ] && warn "$SWEEP_FAIL item(s) could not be removed (read-only or busy)"
 fi
 
 if [ "$PSI_RMDEPS" = 1 ]; then
@@ -382,6 +426,13 @@ if [ "$PSI_PURGE" = 1 ]; then
 	chk "/etc/config/psiphon exists" test -e /etc/config/psiphon
 	chk "/etc/psiphon exists"        test -e /etc/psiphon
 	chk "$CORE exists"               test -e "$CORE"
+	# anything else on the system whose name still contains "psiphon"
+	_self=$(readlink -f "$0" 2>/dev/null)
+	_lft=$(psi_find_named | { if [ -n "$_self" ]; then grep -vxF -e "$_self"; else cat; fi; })
+	if [ -n "$_lft" ]; then
+		printf '%s\n' "$_lft" | while IFS= read -r _p; do warn "leftover: $_p"; done
+		LEFT=$((LEFT + $(printf '%s\n' "$_lft" | wc -l)))
+	fi
 fi
 
 # connectivity sanity check (router -> internet over the normal WAN path)
