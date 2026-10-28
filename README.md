@@ -34,29 +34,62 @@ uname -m
 
  📁 ۳. استقرار زیرساخت و کدهای کامل پنل گرافیکی
 
-فایل Psiphon VPN 2.0.40_manual.setup.sh به پوشه زیر
+فایل Psiphon VPN 2.0.42_manual.setup.sh به پوشه زیر
  منتقل کنید و دستور زیر اجرا کنید
-"/tmp/Psiphon VPN 2.0.40_manual.setup.sh"
+"/tmp/Psiphon VPN 2.0.42_manual.setup.sh"
 
 ```bash
-sh "/tmp/Psiphon VPN 2.0.40_manual.setup.sh"
+sh "/tmp/Psiphon VPN 2.0.42_manual.setup.sh"
 ```
  ✅ . شروع به کار
  Auto Connect (Enable) , Full Tunnel Mode  فعال کنید
 2. با هر تغییر برای ذخیره در تنظیمات Save & Apply را باید بزنید
 3. کلید Start را بزنید تا این دوتا فایل و پوشه ساخته شود
 ```bash
- "/etc/psiphon/ca.psiphon.PsiphonTunnel.tunnel-core/datastore/psiphon.boltdb"
- "/etc/psiphon/psiphon.config"
+"/tmp/psiphon/ca.psiphon.PsiphonTunnel.tunnel-core/datastore/psiphon.boltdb"
+"/tmp/psiphon/psiphon.config"
+
 ```
 
 
-# 🗑️ حذف کامل و بی‌بازگشت سایفون از سیستم (Uninstall)
+# 🗑️ حذف کامل و بی‌بازگشت سایفون از سیستم (TEST) & (Uninstall)
 
 انتقال فایل به داخل روتر / و اجرای دستور زیر
 ```bash
 sh "/tmp/Uninstall.sh"
+
+sh
+sh Uninstall.sh            # با تأیید
+sh Uninstall.sh -y         # بدون پرسش
+sh Uninstall.sh -y --purge # حذف کامل
+
+
 ```
+
+توقف و آزادسازی: سرویس را متوقف و غیرفعال می‌کند و kill switch را آزاد می‌کند تا اینترنت LAN بسته نماند. اگر psiphon-core یا watcher هنوز زنده باشند، آن‌ها را هم می‌بندد.
+پاکسازی شبکه:
+ابتدا cleanup خود helper اجرا می‌شود و بعد یک پاکسازی دستی جداگانه به‌عنوان پشتیبان.
+این پشتیبان جدول‌های nft، ip ruleهای 990 و 1000، جدول route شماره 100، tun0 (فقط اگر خود Psiphon ساخته باشد)، IPv6 روی WAN، فایل DNS در dnsmasq، موتور DoH و upstreamهای dnsmasq را برمی‌گرداند.
+حذف فایل‌ها: فایل‌های برنامه، zone و forwarding فایروال و ورودی‌های /etc/sysupgrade.conf پاک می‌شوند.
+گزینه‌ها:
+--purge علاوه بر بقیه، config، datastore و فایل core را هم پاک می‌کند.
+--remove-deps بسته‌های https-dns-proxy و tcpdump را حذف می‌کند.
+--reset-confdir مقدار confdir در dnsmasq را برمی‌گرداند.
+تأیید پایانی: در آخر باقی‌مانده‌ها را بررسی می‌کند و دسترسی روتر به اینترنت و DNS محلی را هم تست می‌کند.
+
+Test_Full.sh
+```bash
+sh
+sh Test_Full.sh            # تست‌های غیرمزاحم
+sh Test_Full.sh --quick    # فقط بررسی ایستا
+sh Test_Full.sh --full     # با تست راه‌اندازی/توقف و اسکنر CDN
+sh Test_Full.sh --only helper,live
+```
+env: پیش‌نیازها، kmod-tun، ca-bundle، TLS، فضای flash و nftables.
+files: فایل‌های نصب‌شده، دسترسی‌ها، syntax، JSONهای menu و ACL، و flagهای باینری core.
+config: مقادیر UCI و تناقض بین گزینه‌ها، zone فایروال، confdir در dnsmasq و ورودی‌های sysupgrade.
+helper: تست آفلاین خود helper.
+config تولیدشده برای core، parserهای لاگ، محاسبه subnet، MTU و MSS، و رنج‌ها و نمونه‌گیری CDN بررسی می‌شوند.
 
 ##محیط Luci برای سایفون
 
