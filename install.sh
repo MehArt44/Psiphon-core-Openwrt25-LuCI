@@ -1,4 +1,184 @@
 #!/bin/sh
+# ==============================================================================
+# Psiphon Core for OpenWrt 25 / LuCI — One-Click Installer
+# Repo: https://github.com/MehArt44/Psiphon-core-Openwrt25-LuCI
+#
+# اجرا روی روتر:
+#   wget -O /tmp/install.sh https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh
+#   sh /tmp/install.sh
+# ==============================================================================
+
+set -e
+
+# ==============================================================================
+# پردازش آرگومان‌ها و حالت حذف (--uninstall / --purge)
+# ------------------------------------------------------------------------------
+# این بخش عمداً قبل از دانلود قرار دارد تا حذف بدون دانلود مجدد باینری انجام شود.
+# ==============================================================================
+PSI_AUTO_INSTALL_DOH="${PSI_AUTO_INSTALL_DOH:-0}"
+PSI_UNINSTALL=0; PSI_PURGE=0
+for _a in "$@"; do
+	case "$_a" in
+		--auto-install-doh) PSI_AUTO_INSTALL_DOH=1 ;;
+		--uninstall) PSI_UNINSTALL=1 ;;
+		--purge) PSI_UNINSTALL=1; PSI_PURGE=1 ;;
+		-h|--help) echo "Usage: sh $0 [--auto-install-doh] [--uninstall] [--purge]"; exit 0 ;;
+		*) echo "WARNING: unknown option: $_a" >&2 ;;
+	esac
+done
+if [ "$PSI_UNINSTALL" = 1 ]; then
+	echo "Uninstalling luci-app-psiphon..."
+	[ -x /etc/init.d/psiphon ] && { /etc/init.d/psiphon stop >/dev/null 2>&1 || true; /etc/init.d/psiphon disable >/dev/null 2>&1 || true; }
+	[ -x /usr/bin/psiphon-helper ] && { PSI_INTERNAL=1 PSI_KS_RELEASE=1 /usr/bin/psiphon-helper cleanup >/dev/null 2>&1 || true; }
+	rm -f /etc/init.d/psiphon /usr/bin/psiphon-helper /etc/hotplug.d/iface/90-psiphon \
+		/usr/share/luci/menu.d/luci-app-psiphon.json /usr/share/rpcd/acl.d/luci-app-psiphon.json \
+		/www/luci-static/resources/view/vpn/psiphon.js /etc/rc.d/S99psiphon
+	rm -rf /tmp/psiphon /tmp/psiphon.log /tmp/dnsmasq.d/psiphon_dns.conf
+	if uci -q get firewall.psiphon >/dev/null 2>&1; then
+		uci -q delete firewall.psiphon_forwarding || true
+		uci -q delete firewall.psiphon || true
+		uci -q commit firewall || true
+	fi
+	if [ -f /etc/sysupgrade.conf ]; then
+		for _f in /etc/config/psiphon /etc/init.d/psiphon /usr/bin/psiphon-helper /etc/hotplug.d/iface/90-psiphon \
+			/usr/share/luci/menu.d/luci-app-psiphon.json /usr/share/rpcd/acl.d/luci-app-psiphon.json \
+			/www/luci-static/resources/view/vpn/psiphon.js /usr/bin/psiphon-core /etc/psiphon /etc/rc.d/S99psiphon; do
+			grep -vxF "$_f" /etc/sysupgrade.conf > /etc/sysupgrade.conf.psi.tmp 2>/dev/null && cat /etc/sysupgrade.conf.psi.tmp > /etc/sysupgrade.conf
+			rm -f /etc/sysupgrade.conf.psi.tmp
+		done
+	fi
+	if [ "$PSI_PURGE" = 1 ]; then
+		rm -rf /etc/config/psiphon /etc/psiphon /usr/bin/psiphon-core
+		echo "Purged config, datastore and core binary."
+	else
+		echo "Kept /etc/config/psiphon, /etc/psiphon and /usr/bin/psiphon-core (use --purge to remove them)."
+	fi
+	echo "Note: dhcp confdir (dnsmasq) was left untouched."
+	rm -rf /tmp/luci-indexcache* /tmp/luci-modulecache/ /var/luci-indexcache* 2>/dev/null || true
+	[ -x /etc/init.d/firewall ] && { /etc/init.d/firewall reload >/dev/null 2>&1 || true; }
+	[ -x /etc/init.d/dnsmasq ] && { /etc/init.d/dnsmasq restart >/dev/null 2>&1 || true; }
+	[ -x /etc/init.d/rpcd ] && { /etc/init.d/rpcd restart >/dev/null 2>&1 || true; }
+	[ -x /etc/init.d/uhttpd ] && { /etc/init.d/uhttpd restart >/dev/null 2>&1 || true; }
+	echo "Done."
+	exit 0
+fi
+
+
+REPO_TAG="2.0.42"
+BASE_URL="https://github.com/MehArt44/Psiphon-core-Openwrt25-LuCI/releases/download/${REPO_TAG}"
+BIN_PATH="/usr/bin/psiphon-core"
+TMP_BIN="/tmp/psiphon-core.download"
+
+echo "=============================================="
+echo " Psiphon Core Installer for OpenWrt / LuCI"
+echo "=============================================="
+
+# ==============================================================================
+# مرحله ۰: بررسی پیش‌نیازها (باید یکی از wget یا curl موجود باشد)
+# ------------------------------------------------------------------------------
+# روی اکثر روترهای OpenWrt به‌صورت پیش‌فرض busybox wget نصب است؛ این بخش هر دو
+# را چک می‌کند تا اسکریپت روی هر دستگاهی بدون خطا اجرا شود.
+# ==============================================================================
+if command -v wget >/dev/null 2>&1; then
+    DOWNLOADER="wget"
+elif command -v curl >/dev/null 2>&1; then
+    DOWNLOADER="curl"
+else
+    echo "خطا: هیچ‌کدام از wget یا curl روی این روتر نصب نیست."
+    echo "ابتدا با دستور: opkg update && opkg install wget-ssl   نصب کنید."
+    exit 1
+fi
+
+download_file() {
+    # $1 = URL   $2 = مسیر مقصد
+    if [ "$DOWNLOADER" = "wget" ]; then
+        wget -q --show-progress -O "$2" "$1" || wget -q -O "$2" "$1"
+    else
+        curl -fSL -o "$2" "$1"
+    fi
+}
+
+# ==============================================================================
+# مرحله ۱: شناسایی معماری CPU روتر
+# ------------------------------------------------------------------------------
+# خروجی uname -m به یکی از فرم‌های رایج ARM/MIPS/x86 ترجمه می‌شود تا نام درست
+# فایل باینری منتشر شده در ریلیز گیت‌هاب انتخاب گردد.
+# ==============================================================================
+echo ""
+echo "[1/5] شناسایی معماری پردازنده..."
+RAW_ARCH=$(uname -m)
+echo "      خروجی uname -m: ${RAW_ARCH}"
+
+case "$RAW_ARCH" in
+    x86_64|amd64)
+        ARCH="amd64"
+        ;;
+    i386|i486|i586|i686)
+        ARCH="386"
+        ;;
+    aarch64|aarch64_be|arm64)
+        ARCH="arm64"
+        ;;
+    armv7*|armv6l)
+        ARCH="armv7"
+        ;;
+    armv5*|armv4*|arm)
+        ARCH="armv5"
+        ;;
+    mips)
+        # تشخیص endianness برای مسیرهای MIPS خالص (بدون le/be در uname)
+        if echo -n I | od -to2 | head -n1 | grep -qE '01[[:space:]]*$'; then
+            ARCH="mipsle"
+        else
+            ARCH="mips"
+        fi
+        ;;
+    mipsel|mipsle)
+        ARCH="mipsle"
+        ;;
+    mips64|mips64el|mips64le)
+        ARCH="mips64le"
+        ;;
+    *)
+        echo "خطا: معماری '${RAW_ARCH}' پشتیبانی نمی‌شود."
+        echo "معماری‌های پشتیبانی‌شده: 386, amd64, arm64, armv5, armv7, mips, mipsle, mips64le"
+        exit 1
+        ;;
+esac
+echo "      معماری انتخاب‌شده برای دانلود: ${ARCH}"
+
+# ==============================================================================
+# مرحله ۲: دانلود باینری متناظر از ریلیز گیت‌هاب
+# ------------------------------------------------------------------------------
+# فایل ابتدا در /tmp دانلود می‌شود تا در صورت قطع‌شدن دانلود یا خرابی فایل،
+# نسخه‌ی قبلاً نصب‌شده (در صورت وجود) دست‌نخورده باقی بماند.
+# ==============================================================================
+echo ""
+echo "[2/5] دانلود psiphon-core-${ARCH} ... (ممکن است تا ۱۰ دقیقه طول بکشد، لطفاً صبر کنید)"
+DOWNLOAD_URL="${BASE_URL}/psiphon-core-${ARCH}"
+download_file "$DOWNLOAD_URL" "$TMP_BIN"
+
+if [ ! -s "$TMP_BIN" ]; then
+    echo "خطا: دانلود ناموفق بود یا فایل خالی است. لینک را بررسی کنید:"
+    echo "      $DOWNLOAD_URL"
+    exit 1
+fi
+echo "      دانلود با موفقیت انجام شد."
+
+# ==============================================================================
+# مرحله ۳ و ۴: انتقال به /usr/bin/ و تغییر نام به psiphon-core
+# ------------------------------------------------------------------------------
+# اگر سرویس از قبل در حال اجرا باشد، ابتدا متوقف می‌شود تا فایل باینری در حال
+# استفاده جایگزین نشود (جلوگیری از خطای "Text file busy").
+# ==============================================================================
+echo ""
+echo "[3/5] نصب باینری در ${BIN_PATH} ..."
+[ -x /etc/init.d/psiphon ] && /etc/init.d/psiphon stop >/dev/null 2>&1 || true
+
+mv -f "$TMP_BIN" "$BIN_PATH"
+chmod +x "$BIN_PATH"
+echo "      باینری با موفقیت در ${BIN_PATH} قرار گرفت."
+# ==============================================================================
 set -e
 PSI_AUTO_INSTALL_DOH="${PSI_AUTO_INSTALL_DOH:-0}"
 PSI_UNINSTALL=0; PSI_PURGE=0
