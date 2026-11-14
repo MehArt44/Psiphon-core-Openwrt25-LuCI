@@ -1,6 +1,6 @@
 **Chinese** | [Persian](README.md) | [English](README.en.md)
 
-# Psiphon VPN + CDN Fronting
+# Psiphon VPN
 
 在 OpenWrt 25 上安装、设置和自动化 Psiphon-Core 及其图形化 LuCI 面板的指南。
 
