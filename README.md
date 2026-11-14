@@ -1,6 +1,6 @@
 **پارسی** | [English](README.en.md) | [Chinese](README.zh.md)
 
-# Psiphon VPN + CDN Fronting
+# Psiphon VPN
 
 راهنمای نصب، راه‌اندازی و خودکارسازی Psiphon-Core به همراه پنل گرافیکی LuCI در OpenWrt 25
 
