@@ -8,26 +8,26 @@
 
 ## 🚀 آموزش نصب آسان (Installation)
 
-
-## 🚀 آموزش نصب آسان (Installation)
-
 برای نصب سریع، از طریق نرم‌افزارهای SSH (مانند MobaXterm یا PuTTY یا Terminal) با دسترسی root به روتر وصل شوید و یکی از دو دستور زیر را اجرا کنید:
 
 **با `wget`:**
 
 ```
 wget -O /tmp/install.sh https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh && sh /tmp/install.sh
+
 ```
 
 **یا با `curl`:**
 
 ```
 curl -fsSL https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh -o /tmp/install.sh && sh /tmp/install.sh
+
 ```
 
 ⏳ دانلود و نصب ممکن است تا ۱۰ دقیقه طول بکشد؛ لطفاً صبر کنید.
 
 پس از پایان نصب، صفحهٔ LuCI را با `Ctrl+F5` تازه کنید و به **VPN → Psiphon VPN** بروید.
+
 
 ## 🛠️ آموزش نصب دستی (Manual Installation)
 
