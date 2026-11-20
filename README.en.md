@@ -10,9 +10,20 @@ This project is a fully operational guide for connecting the Psiphon Linux core 
 
 For a quick install, simply connect to your router via an SSH client (such as PuTTY or Terminal) and run the following commands:
 
-```bash
-wget -O /tmp/install.sh https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh
-sh /tmp/install.sh
+```
+apk update && apk add ca-bundle wget-ssl
+wget -O /tmp/install.sh https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh && sh /tmp/install.sh
+#تست نصب دوتا پکیج زیر
+apk info -e https-dns-proxy tcpdump
+
+```
+
+or curl
+
+```
+curl -fsSL https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh -o /tmp/install.sh && sh /tmp/install.sh
+#تست نصب دوتا پکیج زیر
+apk info -e https-dns-proxy tcpdump
 
 ```
 
