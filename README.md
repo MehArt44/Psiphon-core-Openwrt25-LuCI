@@ -15,10 +15,8 @@
 ```
 apk update && apk add ca-bundle wget-ssl
 wget -O /tmp/install.sh https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh && sh /tmp/install.sh
-
 #تست نصب دوتا پکیج زیر
 apk info -e https-dns-proxy tcpdump
-
 
 ```
 
@@ -26,10 +24,8 @@ apk info -e https-dns-proxy tcpdump
 
 ```
 curl -fsSL https://raw.githubusercontent.com/MehArt44/Psiphon-core-Openwrt25-LuCI/main/install.sh -o /tmp/install.sh && sh /tmp/install.sh
-
 #تست نصب دوتا پکیج زیر
 apk info -e https-dns-proxy tcpdump
-
 
 ```
 
